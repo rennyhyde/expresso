@@ -2,13 +2,10 @@
 Receives Bluetooth signal from Expresso and sends Midi CC via LoopMidi on Windows
 '''
 
-import time
 import rtmidi
 import asyncio
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
-from pythonosc import udp_client
-import numpy as np
 
 ### Connect Bluetooth ###
 
@@ -87,28 +84,10 @@ async def send_midiCC(data, midiout):
     
 
     with midiout:
-        
-        # Send 127 on button rising edge and 0 on button falling edge
-        # Calculate differential of button signal:
-        
         if buttonDiff > 0:  # Rising edge
             deviceOn = not deviceOn
             midiout.send_message([midi_status, button_cc, 127 if deviceOn else 0])
         prevButton = bVal
-
-        # if bVal == 1:
-        #     midiout.send_message([midi_status, button_cc, 127])
-
-        # try:
-        #     xpos = float(xpos)
-        # except:
-        #     xpos = 0.0
-
-        # try:
-        #     ypos = float(ypos)
-        # except:
-        #     ypos = 0.0
-
 
         if curveX == LINEAR:
             xpos += float((xVal-1) * (notifyRate / xGrowthRate))
@@ -159,17 +138,4 @@ async def main():
 
 
 asyncio.run(main())
-
-
-
-
-
-# with midiout:
-#     note_on = [0x90, 60, 112] # channel 1, middle C, velocity 112
-#     note_off = [0x80, 60, 0]
-#     while True:
-#         midiout.send_message(note_on)
-#         time.sleep(0.5)
-#         midiout.send_message(note_off)
-#         time.sleep(0.1)
 
